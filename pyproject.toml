@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "mosaic-os"
+version = "0.1.0"
+description = "Shared python library for Mosaic OS"
+authors = ["Gohar Iqbal <gohar@mosaicventures.com>"]
+readme = "README.md"
+packages = [{include = "mosaic_os"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -106,6 +106,7 @@ AFFINITY_COMPANY_FIELD_VALUES_RETURN_VALUE = [
 ]
 
 
+# This tests the case where the company is found in the SP but not in the CRM
 @pytest.mark.asyncio
 async def test_get_all_company_details_no_affinity_match(mocker: MockerFixture, tests_setup_and_teardown):
     mocker.patch("mosaic_os.sourcing_platform.HarmonicGql.query", return_value=HARMONIC_RETURN_VALUE)
@@ -119,6 +120,7 @@ async def test_get_all_company_details_no_affinity_match(mocker: MockerFixture, 
     assert company_details["sourcing_platform"]["watchlists"][0]["name"] == "test"
 
 
+# This tests the case where the company is found in the CRM and in the SP
 @pytest.mark.asyncio
 async def test_get_all_company_details_sp_and_crm_match(mocker: MockerFixture, tests_setup_and_teardown):
     mocker.patch("mosaic_os.sourcing_platform.HarmonicGql.query", return_value=HARMONIC_RETURN_VALUE)
@@ -145,6 +147,7 @@ async def test_get_all_company_details_sp_and_crm_match(mocker: MockerFixture, t
     assert isinstance(company_details["crm"]["last_live_pipeline_list_entry"]["priority"], dict)
 
 
+# This tests the case where the company is found in the CRM but not in the SP
 @pytest.mark.asyncio
 async def test_get_all_company_details_no_sp_match(mocker: MockerFixture, tests_setup_and_teardown):
     harmonic_company_not_found_error = [

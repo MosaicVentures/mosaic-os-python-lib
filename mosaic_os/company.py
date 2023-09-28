@@ -4,7 +4,7 @@ from gql.transport.exceptions import TransportQueryError
 from tldextract import extract
 
 from mosaic_os.constants import affinity_config
-from mosaic_os.crm import AfinityApi
+from mosaic_os.crm import AffinityApi
 from mosaic_os.sourcing_platform import HarmonicGql
 
 
@@ -18,7 +18,7 @@ async def get_all_company_details(domain: str) -> dict:
         dict: Dictionary with keys `crm` and `sourcing_platform` containing company details
     """
     harmonic_client = HarmonicGql()
-    affinity_client = AfinityApi()
+    affinity_client = AffinityApi()
     affinity_env_config = affinity_config[environ.get("ENVIRONMENT", "prod")]
 
     domain_clean = extract(domain).registered_domain

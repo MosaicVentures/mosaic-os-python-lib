@@ -6,7 +6,7 @@ from httpx import AsyncClient
 AFFINITY_API_BASE_URL = "https://api.affinity.co"
 
 
-class AfinityApi:
+class AffinityApi:
     """
     Affinity API Wrapper. See https://api-docs.affinity.co/ for more information
 

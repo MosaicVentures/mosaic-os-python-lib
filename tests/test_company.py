@@ -110,7 +110,7 @@ AFFINITY_COMPANY_FIELD_VALUES_RETURN_VALUE = [
 @pytest.mark.asyncio
 async def test_get_all_company_details_no_affinity_match(mocker: MockerFixture, tests_setup_and_teardown):
     mocker.patch("mosaic_os.sourcing_platform.HarmonicGql.query", return_value=HARMONIC_RETURN_VALUE)
-    mocker.patch("mosaic_os.crm.AfinityApi.search_company_by_name_and_domains", return_value=[])
+    mocker.patch("mosaic_os.crm.AffinityApi.search_company_by_name_and_domains", return_value=[])
 
     company_details = await get_all_company_details("test.com")
     assert company_details["crm"] is None
@@ -125,11 +125,11 @@ async def test_get_all_company_details_no_affinity_match(mocker: MockerFixture, 
 async def test_get_all_company_details_sp_and_crm_match(mocker: MockerFixture, tests_setup_and_teardown):
     mocker.patch("mosaic_os.sourcing_platform.HarmonicGql.query", return_value=HARMONIC_RETURN_VALUE)
     mocker.patch(
-        "mosaic_os.crm.AfinityApi.search_company_by_name_and_domains", return_value=AFFINITY_SEARCH_RETURN_VALUE
+        "mosaic_os.crm.AffinityApi.search_company_by_name_and_domains", return_value=AFFINITY_SEARCH_RETURN_VALUE
     )
-    mocker.patch("mosaic_os.crm.AfinityApi.get_company_details", return_value=AFFINITY_COMPANY_DETAILS_RETURN_VALUE)
+    mocker.patch("mosaic_os.crm.AffinityApi.get_company_details", return_value=AFFINITY_COMPANY_DETAILS_RETURN_VALUE)
     mocker.patch(
-        "mosaic_os.crm.AfinityApi.get_organization_field_values",
+        "mosaic_os.crm.AffinityApi.get_organization_field_values",
         return_value=AFFINITY_COMPANY_FIELD_VALUES_RETURN_VALUE,
     )
 
@@ -176,11 +176,11 @@ async def test_get_all_company_details_no_sp_match(mocker: MockerFixture, tests_
         side_effect=TransportQueryError(msg="404: Not Found", errors=harmonic_company_not_found_error),
     )
     mocker.patch(
-        "mosaic_os.crm.AfinityApi.search_company_by_name_and_domains", return_value=AFFINITY_SEARCH_RETURN_VALUE
+        "mosaic_os.crm.AffinityApi.search_company_by_name_and_domains", return_value=AFFINITY_SEARCH_RETURN_VALUE
     )
-    mocker.patch("mosaic_os.crm.AfinityApi.get_company_details", return_value=AFFINITY_COMPANY_DETAILS_RETURN_VALUE)
+    mocker.patch("mosaic_os.crm.AffinityApi.get_company_details", return_value=AFFINITY_COMPANY_DETAILS_RETURN_VALUE)
     mocker.patch(
-        "mosaic_os.crm.AfinityApi.get_organization_field_values",
+        "mosaic_os.crm.AffinityApi.get_organization_field_values",
         return_value=AFFINITY_COMPANY_FIELD_VALUES_RETURN_VALUE,
     )
 

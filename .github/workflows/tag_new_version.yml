@@ -43,3 +43,5 @@ jobs:
     steps:
       - name: Release
         uses: rymndhng/release-on-push-action@v0.28.0
+        with:
+          bump_version_scheme: norelease

@@ -1,0 +1,18 @@
+import pytest
+
+from mosaic_os.auth import decode_userinfo_from_header
+
+
+def test_decode_userinfo_from_header_successfully():
+    header = "eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI1MzA3NTk3NTgyMDEtNjk3MDQ2YWw4dmMya3E4dmw1YXVnYW00b2tjNTN2a2cuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI1MzA3NTk3NTgyMDEtNjk3MDQ2YWw4dmMya3E4dmw1YXVnYW00b2tjNTN2a2cuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDIyODE0NzA1NTUwOTY1ODkyODIiLCJoZCI6Im1vc2FpY3ZlbnR1cmVzLmNvbSIsImVtYWlsIjoiZ29oYXJAbW9zYWljdmVudHVyZXMuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF0X2hhc2giOiJqWlI0V0RYNlE0MmNnTXFQeWwwUVpBIiwibm9uY2UiOiI1ZWE4NDY2My01NTc0LTRlYjYtYjA1Mi1hNjAwNDZkOGE1NTgiLCJuYmYiOjE2ODgwMzI1MjMsImlhdCI6MTY4ODAzMjgyMywiZXhwIjoxNjg4MDM2NDIzLCJqdGkiOiJlNTkwOTRkOGNiZWE5ZDdkYjM5OGZiNWY0NDY0MjgyYTU5YjliYzA0In0="  # noqa: E501
+
+    decoded_userinfo = decode_userinfo_from_header(header)
+    assert isinstance(decoded_userinfo, dict)
+    assert decoded_userinfo["email"] == "gohar@mosaicventures.com"
+
+
+def test_decode_userinfo_from_header_with_bad_input():
+    header = "iduhihdeiw"
+
+    with pytest.raises(UnicodeDecodeError):
+        decode_userinfo_from_header(header)

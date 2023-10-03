@@ -41,7 +41,7 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - name: Release
+      - name: Release new version
         uses: rymndhng/release-on-push-action@v0.28.0
         with:
           bump_version_scheme: norelease

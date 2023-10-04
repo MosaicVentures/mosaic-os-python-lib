@@ -23,7 +23,15 @@ class HarmonicGql:
 
         transport = AIOHTTPTransport(url="https://api.harmonic.ai/graphql", headers={"apikey": _harmonic_api_key})
         self.client = Client(transport=transport)
+        self.session = None
+
+    async def connect(self):
+        self.session = await self.client.connect_async(reconnecting=True)
 
     async def query(self, query: str, variables: dict = None) -> dict[str, Any]:
-        session = await self.client.connect_async(reconnecting=True)
-        return await session.execute(gql(query), variable_values=variables)
+        if self.session:
+            return await self.session.execute(gql(query), variable_values=variables)
+        return await self.client.session.execute(gql(query), variable_values=variables)
+
+    async def disconnect(self):
+        await self.client.close_async()

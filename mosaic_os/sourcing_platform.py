@@ -31,7 +31,10 @@ class HarmonicGql:
     async def query(self, query: str, variables: dict = None) -> dict[str, Any]:
         if self.session:
             return await self.session.execute(gql(query), variable_values=variables)
-        return await self.client.session.execute(gql(query), variable_values=variables)
+        async with self.client as session:
+            response = await session.execute(gql(query), variable_values=variables)
+
+        return response
 
     async def disconnect(self):
         await self.client.close_async()

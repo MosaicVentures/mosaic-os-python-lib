@@ -24,7 +24,9 @@ class AffinityApi:
         if _affinity_api_key is None:
             raise ValueError("Affinity API key not found in environment variables or passed as argument")
 
-        self.requests = AsyncClient(auth=("", _affinity_api_key), headers={"Content-Type": "application/json"})
+        self.requests = AsyncClient(
+            auth=("", _affinity_api_key), headers={"Content-Type": "application/json"}, base_url=AFFINITY_API_BASE_URL
+        )
 
     # API methods
 
@@ -38,8 +40,7 @@ class AffinityApi:
         Returns:
             dict: Response with `organizations` key containing list of companies
         """
-        url = f"{AFFINITY_API_BASE_URL}/organizations?term={term}"
-        response = await self.requests.get(url)
+        response = await self.requests.get(f"/organizations?term={term}")
         response.raise_for_status()
         return response.json()
 
@@ -53,9 +54,8 @@ class AffinityApi:
         Returns:
             dict: Response with created company details
         """
-        url = f"{AFFINITY_API_BASE_URL}/organizations"
         data = {"name": name, "domain": domain}
-        response = await self.requests.post(url, data=data)
+        response = await self.requests.post("/organizations", data=data)
         response.raise_for_status()
         return response.json()
 
@@ -68,8 +68,9 @@ class AffinityApi:
         Returns:
             dict: Response with company details
         """
-        url = f"{AFFINITY_API_BASE_URL}/organizations/{entity_id}?with_opportunities=true&with_interaction_dates=true&with_interaction_persons=true"  # noqa E501
-        response = await self.requests.get(url)
+        response = await self.requests.get(
+            f"/organizations/{entity_id}?with_opportunities=true&with_interaction_dates=true&with_interaction_persons=true"  # noqa: E501
+        )
         response.raise_for_status()
         return response.json()
 
@@ -82,8 +83,7 @@ class AffinityApi:
         Returns:
             list[dict]: List of field values
         """
-        url = f"{AFFINITY_API_BASE_URL}/field-values?organization_id={entity_id}"
-        response = await self.requests.get(url)
+        response = await self.requests.get(f"/field-values?organization_id={entity_id}")
         response.raise_for_status()
         return response.json()
 
@@ -97,8 +97,7 @@ class AffinityApi:
         Returns:
             dict: Response with `persons` key containing list of persons
         """
-        url = f"{AFFINITY_API_BASE_URL}/persons?term={term}"
-        response = await self.requests.get(url)
+        response = await self.requests.get(f"/persons?term={term}")
         response.raise_for_status()
         return response.json()
 
@@ -118,12 +117,11 @@ class AffinityApi:
         Returns:
             dict: Response with created field value
         """
-        url = f"{AFFINITY_API_BASE_URL}/field-values"
         data = {"field_id": field_id, "entity_id": entity_id, "value": value}
         if list_entry_id is not None:
             data.update({"list_entry_id": list_entry_id})
 
-        response = await self.requests.post(url, data=data)
+        response = await self.requests.post("/field-values", data=data)
         response.raise_for_status()
         return response.json()
 
@@ -137,9 +135,8 @@ class AffinityApi:
         Returns:
             dict: Response with updated field value
         """
-        url = f"{AFFINITY_API_BASE_URL}/field-values/{field_value_id}"
         data = {"value": new_value}
-        response = await self.requests.put(url, data=data)
+        response = await self.requests.put(f"/field-values/{field_value_id}", data=data)
         response.raise_for_status()
         return response.json()
 
@@ -155,12 +152,11 @@ class AffinityApi:
         Returns:
             dict: Response with created list entry
         """
-        url = f"{AFFINITY_API_BASE_URL}/list-entries"
         data = {"list_id": list_id, "entity_id": entity_id}
         if creator_id is not None:
             data.update({"creator_id": creator_id})
 
-        response = await self.requests.post(url, data=data)
+        response = await self.requests.post("/list-entries", data=data)
         response.raise_for_status()
         return response.json()
 

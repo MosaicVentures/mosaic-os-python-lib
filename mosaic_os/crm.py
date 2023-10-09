@@ -101,6 +101,19 @@ class AffinityApi:
         response.raise_for_status()
         return response.json()
 
+    async def get_person_details(self, entity_id: int) -> dict:
+        """Get person details by ID
+
+        Args:
+            entity_id (int): ID of person
+
+        Returns:
+            dict: Response with person details
+        """
+        response = await self.requests.get(f"/persons/{entity_id}")  # noqa: E501
+        response.raise_for_status()
+        return response.json()
+
     # Field value related API calls
     async def create_field_value(
         self, field_id: int, entity_id: int, value: str | int, list_entry_id: int = None
@@ -157,6 +170,19 @@ class AffinityApi:
             data.update({"creator_id": creator_id})
 
         response = await self.requests.post("/list-entries", data=data)
+        response.raise_for_status()
+        return response.json()
+
+    async def get_list_entries(self, list_id: int) -> list[dict]:
+        """Get list entries by list ID
+
+        Args:
+            list_id (int): ID of list
+
+        Returns:
+            list[dict]: List of list entries
+        """
+        response = await self.requests.get(f"/list/{list_id}/list-entries")
         response.raise_for_status()
         return response.json()
 

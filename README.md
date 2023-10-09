@@ -2,12 +2,12 @@
 
 Shared Python code for Mosaic OS
 
-# Pre-requisites
+## Pre-requisites
 
 - Python 3.11
 - [Poetry](https://python-poetry.org/docs/#installation)
 
-# Getting Started
+## Getting Started
 
 ## Install dependencies:
 
@@ -19,4 +19,12 @@ poetry install
 
 ```bash
 poetry run pytest --cov=mosaic_os tests
+```
+
+## Installing this package using Poetry
+
+To install this package you can run:
+
+```bash
+poetry add git+https://github.com/MosaicVentures/mosaic-os-python-lib.git#<branch or tag>
 ```

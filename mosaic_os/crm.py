@@ -3,7 +3,7 @@ from os import environ
 
 from httpx import AsyncClient
 
-AFFINITY_API_BASE_URL = "https://api.affinity.co"
+from mosaic_os.constants import AFFINITY_API_BASE_URL
 
 
 class AffinityApi:

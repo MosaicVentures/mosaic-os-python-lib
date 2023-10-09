@@ -22,3 +22,6 @@ affinity_config = {
         "company_field_ec_flag_value_off": 9999247,
     },
 }
+
+CALENDAR_SCOPES = ["https://www.googleapis.com/auth/calendar.events.readonly"]
+AFFINITY_API_BASE_URL = "https://api.affinity.co"

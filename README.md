@@ -1,3 +1,5 @@
+[![Test Runner](https://github.com/MosaicVentures/mosaic-os-python-lib/actions/workflows/pr_test_runner.yml/badge.svg)](https://github.com/MosaicVentures/mosaic-os-python-lib/actions/workflows/pr_test_runner.yml)
+
 # mosaic-os-python-lib
 
 Shared Python code for Mosaic OS

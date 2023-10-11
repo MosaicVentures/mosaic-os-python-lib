@@ -97,7 +97,7 @@ async def get_all_company_details(domain: str) -> dict:
     last_entry = max(lp_entries, key=lambda entry: entry["created_at"])
 
     # get all field values for company (includes list entries)
-    all_company_field_values = await affinity_client.get_organization_field_values(affinity_entity_id)
+    all_company_field_values = await affinity_client.get_field_values(param={"organization_id": affinity_entity_id})
 
     last_lp_list_entry_field_values = list(
         filter(

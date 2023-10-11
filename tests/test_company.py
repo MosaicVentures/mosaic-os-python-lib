@@ -129,7 +129,7 @@ async def test_get_all_company_details_sp_and_crm_match(mocker: MockerFixture, t
     )
     mocker.patch("mosaic_os.crm.AffinityApi.get_company_details", return_value=AFFINITY_COMPANY_DETAILS_RETURN_VALUE)
     mocker.patch(
-        "mosaic_os.crm.AffinityApi.get_organization_field_values",
+        "mosaic_os.crm.AffinityApi.get_field_values",
         return_value=AFFINITY_COMPANY_FIELD_VALUES_RETURN_VALUE,
     )
 
@@ -180,7 +180,7 @@ async def test_get_all_company_details_no_sp_match(mocker: MockerFixture, tests_
     )
     mocker.patch("mosaic_os.crm.AffinityApi.get_company_details", return_value=AFFINITY_COMPANY_DETAILS_RETURN_VALUE)
     mocker.patch(
-        "mosaic_os.crm.AffinityApi.get_organization_field_values",
+        "mosaic_os.crm.AffinityApi.get_field_values",
         return_value=AFFINITY_COMPANY_FIELD_VALUES_RETURN_VALUE,
     )
 

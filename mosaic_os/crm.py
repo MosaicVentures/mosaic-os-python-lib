@@ -74,19 +74,6 @@ class AffinityApi:
         response.raise_for_status()
         return response.json()
 
-    async def get_organization_field_values(self, entity_id: int) -> list[dict]:
-        """Get field values for company by ID
-
-        Args:
-            entity_id (int): ID of company
-
-        Returns:
-            list[dict]: List of field values
-        """
-        response = await self.requests.get(f"/field-values?organization_id={entity_id}")
-        response.raise_for_status()
-        return response.json()
-
     # Person related API calls
     async def search_person(self, term: str) -> dict:
         """Search person by term in Affinity
@@ -115,6 +102,26 @@ class AffinityApi:
         return response.json()
 
     # Field value related API calls
+    async def get_field_values(self, param: dict) -> list[dict]:
+        """Get field values by Company ID, List Entry ID, or Person ID via params
+
+        Args:
+            param (dict): Query param to filter field values by Company ID, List Entry ID, or Person ID.
+                Only one of the following keys should be specified: `organization_id`, `list_entry_id`, `person_id`
+
+        Returns:
+            list[dict]: List of field values
+        """
+
+        if len(param) != 1 or not any(k in param for k in ("organization_id", "list_entry_id", "person_id")):
+            raise ValueError(
+                "Only one of the following keys should be specified: `organization_id`, `list_entry_id`, `person_id`"
+            )
+
+        response = await self.requests.get(url="/field-values", params=param)
+        response.raise_for_status()
+        return response.json()
+
     async def create_field_value(
         self, field_id: int, entity_id: int, value: str | int, list_entry_id: int = None
     ) -> dict:

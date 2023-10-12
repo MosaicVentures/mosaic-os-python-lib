@@ -160,6 +160,26 @@ class AffinityApi:
         response.raise_for_status()
         return response.json()
 
+    async def get_field_value_changes(self, params: dict) -> list[dict]:
+        """Get field value changes by Field ID and filtered by Company ID, List Entry ID, Action Type
+        or Person ID via params
+        Args:
+            param (dict): Query parameter should contain `field_id` and can be filtered by:
+            - `organization_id` (Company ID)
+            - `list_entry_id` (List Entry ID)
+            - `action_type` (Action Type)
+            - `person_id` (Person ID)
+        Returns:
+            list[dict]: List of field value changes
+        """
+
+        if "field_id" not in params:
+            raise ValueError("Field ID must be specified")
+
+        response = await self.requests.get(url="/field-value-changes", params=params)
+        response.raise_for_status()
+        return response.json()
+
     # List related API calls
     async def create_list_entry(self, list_id: int, entity_id: int, creator_id: int = None) -> dict:
         """Create list entry

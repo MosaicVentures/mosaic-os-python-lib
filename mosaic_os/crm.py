@@ -192,11 +192,11 @@ class AffinityApi:
         Returns:
             dict: Response with created list entry
         """
-        data = {"list_id": list_id, "entity_id": entity_id}
+        data = {"entity_id": entity_id}
         if creator_id is not None:
             data.update({"creator_id": creator_id})
 
-        response = await self.requests.post("/list-entries", data=data)
+        response = await self.requests.post(f"lists/{list_id}/list-entries", data=data)
         response.raise_for_status()
         return response.json()
 
@@ -209,7 +209,7 @@ class AffinityApi:
         Returns:
             list[dict]: List of list entries
         """
-        response = await self.requests.get(f"/list/{list_id}/list-entries")
+        response = await self.requests.get(f"/lists/{list_id}/list-entries")
         response.raise_for_status()
         return response.json()
 

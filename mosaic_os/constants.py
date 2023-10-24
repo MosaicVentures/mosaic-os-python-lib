@@ -45,6 +45,21 @@ class DevLivePipelineStatus(Enum):
     HARD_TO_CRACK = 8615830
 
 
+# Last Meeting Type for Prod and Dev
+class ProdLastMeetingType(Enum):
+    INITIAL_REVIEW = 11173435
+    PITCH_MEETING = 11173436
+    FINAL_PITCH = 11173437
+    DECISION = 11173438
+
+
+class DevLastMeetingType(Enum):
+    INITIAL_REVIEW = 10852610
+    PITCH_MEETING = 10852611
+    FINAL_PITCH = 10852612
+    DECISION = 10852613
+
+
 # Affinity config for Prod and Dev
 affinity_config = {
     "prod": {
@@ -57,6 +72,8 @@ affinity_config = {
         "lp_field_priority": 120060,
         "lp_field_owner": 120059,
         "lp_field_status_values": ProdLivePipelineStatus,
+        "lp_field_last_meeting_type": 3913125,
+        "lp_field_last_meeting_type_values": ProdLastMeetingType,
         "company_field_ec_flag": 3542734,
         "company_field_ec_flag_value_on": 9111690,
         "company_field_ec_flag_value_off": 9111706,
@@ -71,6 +88,8 @@ affinity_config = {
         "lp_field_priority": 3443561,
         "lp_field_owner": 3443558,
         "lp_field_status_values": DevLivePipelineStatus,
+        "lp_field_last_meeting_type": 3828813,
+        "lp_field_last_meeting_type_values": DevLastMeetingType,
         "company_field_ec_flag": 3651213,
         "company_field_ec_flag_value_on": 9999246,
         "company_field_ec_flag_value_off": 9999247,

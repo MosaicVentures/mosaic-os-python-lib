@@ -65,6 +65,7 @@ affinity_config = {
     "prod": {
         "lp_list_id": 13926,
         "ecosystem_list_id": 10764,
+        "email_service_blacklist": 219980,
         "lp_network_list_id": 165583,
         "lp_fields": [139981, 120060, 120059],
         "company_fields": [3542734],
@@ -82,6 +83,7 @@ affinity_config = {
     "dev": {
         "lp_list_id": 181518,
         "ecosystem_list_id": 216930,
+        "email_service_blacklist": 220102,
         "lp_network_list_id": 218842,
         "lp_fields": [3443557, 3443561, 3443558],
         "company_fields": [3651213],

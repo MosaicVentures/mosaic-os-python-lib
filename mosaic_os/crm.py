@@ -55,7 +55,7 @@ class AffinityApi:
             dict: Response with created company details
         """
         data = {"name": name, "domain": domain}
-        response = await self.requests.post("/organizations", data=data)
+        response = await self.requests.post("/organizations", json=data)
         response.raise_for_status()
         return response.json()
 
@@ -141,7 +141,7 @@ class AffinityApi:
         if list_entry_id is not None:
             data.update({"list_entry_id": list_entry_id})
 
-        response = await self.requests.post("/field-values", data=data)
+        response = await self.requests.post("/field-values", json=data)
         response.raise_for_status()
         return response.json()
 
@@ -156,7 +156,7 @@ class AffinityApi:
             dict: Response with updated field value
         """
         data = {"value": new_value}
-        response = await self.requests.put(f"/field-values/{field_value_id}", data=data)
+        response = await self.requests.put(f"/field-values/{field_value_id}", json=data)
         response.raise_for_status()
         return response.json()
 
@@ -196,7 +196,7 @@ class AffinityApi:
         if creator_id is not None:
             data.update({"creator_id": creator_id})
 
-        response = await self.requests.post(f"lists/{list_id}/list-entries", data=data)
+        response = await self.requests.post(f"lists/{list_id}/list-entries", json=data)
         response.raise_for_status()
         return response.json()
 

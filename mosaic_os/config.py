@@ -23,6 +23,7 @@ def get_config(config_bucket: str = None, config_object_name: str = None, versio
     Returns:
         dict[str, Any]: Mosaic OS configuration as a dict
     """
+    storage_client = storage.Client()
     _config_bucket = environ.get(CONFIG_BUCKET_ENV_NAME, config_bucket)
     _config_object_name = environ.get(CONFIG_OBJECT_ENV_NAME, config_object_name)
 
@@ -37,5 +38,5 @@ def get_config(config_bucket: str = None, config_object_name: str = None, versio
         )
 
     config_object = storage.Blob(bucket=_config_bucket, name=_config_object_name, generation=version)
-    config = config_object.download_as_bytes()
+    config = config_object.download_as_bytes(client=storage_client)
     return json.loads(config)

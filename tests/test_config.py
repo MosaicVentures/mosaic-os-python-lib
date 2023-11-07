@@ -6,7 +6,8 @@ from mosaic_os.config import get_config
 from mosaic_os.constants import CONFIG_BUCKET_ENV_NAME, CONFIG_OBJECT_ENV_NAME
 
 
-def test_get_config_raises_error_no_config_bucket():
+def test_get_config_raises_error_no_config_bucket(mocker: MockerFixture):
+    mocker.patch("config.storage.Client", return_value=None)
     with pytest.raises(ValueError) as excinfo:
         get_config(config_bucket=None, config_object_name="test")
 
@@ -16,7 +17,8 @@ def test_get_config_raises_error_no_config_bucket():
     )
 
 
-def test_get_config_raises_error_no_config_object_name():
+def test_get_config_raises_error_no_config_object_name(mocker: MockerFixture):
+    mocker.patch("config.storage.Client", return_value=None)
     with pytest.raises(ValueError) as excinfo:
         get_config(config_bucket="test", config_object_name=None)
 
@@ -27,6 +29,7 @@ def test_get_config_raises_error_no_config_object_name():
 
 
 def test_get_config_returns_dict(mocker: MockerFixture):
+    mocker.patch("config.storage.Client", return_value=None)
     mocker.patch.object(Blob, "download_as_bytes", return_value=b'{"test": "test"}')
     config = get_config(config_bucket="test", config_object_name="test")
     assert isinstance(config, dict)

@@ -1,14 +1,13 @@
-from os import environ
+from typing import Any
 
 from gql.transport.exceptions import TransportQueryError
 from tldextract import extract
 
-from mosaic_os.constants import affinity_config
 from mosaic_os.crm import AffinityApi
 from mosaic_os.sourcing_platform import HarmonicGql
 
 
-async def get_all_company_details(domain: str) -> dict:
+async def get_all_company_details(domain: str, affinity_config: dict[str, Any]) -> dict:
     """Get company details from CRM and Sourcing Platform
 
     Args:
@@ -19,7 +18,12 @@ async def get_all_company_details(domain: str) -> dict:
     """
     harmonic_client = HarmonicGql()
     affinity_client = AffinityApi()
-    affinity_env_config = affinity_config[environ.get("ENVIRONMENT", "prod")]
+
+    live_pipeline_fields = [
+        affinity_config["lp_status_field_id"],
+        affinity_config["lp_priority_field_id"],
+        affinity_config["lp_owner_field_id"],
+    ]
 
     domain_clean = extract(domain).registered_domain
 
@@ -92,7 +96,7 @@ async def get_all_company_details(domain: str) -> dict:
 
     # loop through list entries, get live pipeline entries only, and pick most recent one
     lp_entries = affinity_client.filter_entries_by_list_id(
-        list_entries=affinity_company_details["list_entries"], list_id=affinity_env_config["lp_list_id"]
+        list_entries=affinity_company_details["list_entries"], list_id=affinity_config["lp_list_id"]
     )
     last_entry = max(lp_entries, key=lambda entry: entry["created_at"])
 
@@ -102,7 +106,7 @@ async def get_all_company_details(domain: str) -> dict:
     last_lp_list_entry_field_values = list(
         filter(
             lambda field_value: (field_value["list_entry_id"] == last_entry["id"])
-            and (field_value["field_id"] in affinity_env_config["lp_fields"]),
+            and (field_value["field_id"] in live_pipeline_fields),
             all_company_field_values,
         )
     )
@@ -110,7 +114,7 @@ async def get_all_company_details(domain: str) -> dict:
     company_field_values = list(
         filter(
             lambda field_value: (field_value["list_entry_id"] is None)
-            and (field_value["field_id"] in affinity_env_config["company_fields"]),
+            and (field_value["field_id"] == affinity_config["ec_flag_field_id"]),
             all_company_field_values,
         )
     )
@@ -123,18 +127,18 @@ async def get_all_company_details(domain: str) -> dict:
         "company_name": affinity_company_details["name"],
         "domain": affinity_company_details["domain"],
         "ec_flag": affinity_client.field_value_by_field_id(
-            field_values=company_field_values, field_id=affinity_env_config["company_field_ec_flag"]
+            field_values=company_field_values, field_id=affinity_config["ec_flag_field_id"]
         ),
         "last_live_pipeline_list_entry": {
             "entry_id": last_entry["id"],
             "status": affinity_client.field_value_by_field_id(
-                field_values=last_lp_list_entry_field_values, field_id=affinity_env_config["lp_field_status"]
+                field_values=last_lp_list_entry_field_values, field_id=affinity_config["lp_status_field_id"]
             ),
             "priority": affinity_client.field_value_by_field_id(
-                field_values=last_lp_list_entry_field_values, field_id=affinity_env_config["lp_field_priority"]
+                field_values=last_lp_list_entry_field_values, field_id=affinity_config["lp_priority_field_id"]
             ),
             "owner": affinity_client.field_value_by_field_id(
-                field_values=last_lp_list_entry_field_values, field_id=affinity_env_config["lp_field_owner"]
+                field_values=last_lp_list_entry_field_values, field_id=affinity_config["lp_owner_field_id"]
             ),
         },
     }

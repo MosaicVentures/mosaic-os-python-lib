@@ -3,9 +3,6 @@ from gql.transport.exceptions import TransportQueryError
 from pytest_mock import MockerFixture
 
 from mosaic_os.company import get_all_company_details
-from mosaic_os.constants import affinity_config
-
-config = affinity_config["prod"]
 
 HARMONIC_RETURN_VALUE = {
     "enrichCompanyByIdentifiers": {
@@ -43,14 +40,14 @@ AFFINITY_COMPANY_DETAILS_RETURN_VALUE = {
     "list_entries": [
         {
             "id": 389,
-            "list_id": config["lp_list_id"],
+            "list_id": 13926,
             "creator_id": 38603,
             "entity_id": 64779194,
             "created_at": "2015-12-11T02:26:56.537-08:00",
         },
         {
             "id": 390,
-            "list_id": config["lp_list_id"],
+            "list_id": 13926,
             "creator_id": 38603,
             "entity_id": 64779194,
             "created_at": "2015-12-12T02:26:56.537-08:00",
@@ -61,7 +58,7 @@ AFFINITY_COMPANY_DETAILS_RETURN_VALUE = {
 AFFINITY_COMPANY_FIELD_VALUES_RETURN_VALUE = [
     {
         "id": 2634897436,
-        "field_id": config["company_field_ec_flag"],
+        "field_id": 387543,
         "list_entry_id": None,
         "entity_type": 0,
         "value_type": 2,
@@ -72,7 +69,7 @@ AFFINITY_COMPANY_FIELD_VALUES_RETURN_VALUE = [
     },
     {
         "id": 2634897437,
-        "field_id": config["lp_field_status"],
+        "field_id": 23986439,
         "list_entry_id": 390,
         "entity_type": 0,
         "value_type": 2,
@@ -83,7 +80,7 @@ AFFINITY_COMPANY_FIELD_VALUES_RETURN_VALUE = [
     },
     {
         "id": 2634897438,
-        "field_id": config["lp_field_priority"],
+        "field_id": 28964932,
         "list_entry_id": 390,
         "entity_type": 0,
         "value_type": 2,
@@ -94,7 +91,7 @@ AFFINITY_COMPANY_FIELD_VALUES_RETURN_VALUE = [
     },
     {
         "id": 2634897438,
-        "field_id": config["lp_field_owner"],
+        "field_id": 396430,
         "list_entry_id": 390,
         "entity_type": 0,
         "value_type": 2,
@@ -105,6 +102,14 @@ AFFINITY_COMPANY_FIELD_VALUES_RETURN_VALUE = [
     },
 ]
 
+mock_affinity_config = {
+    "lp_list_id": 13926,
+    "lp_status_field_id": 23986439,
+    "lp_priority_field_id": 28964932,
+    "lp_owner_field_id": 396430,
+    "ec_flag_field_id": 387543,
+}
+
 
 # This tests the case where the company is found in the SP but not in the CRM
 @pytest.mark.asyncio
@@ -112,7 +117,7 @@ async def test_get_all_company_details_no_affinity_match(mocker: MockerFixture, 
     mocker.patch("mosaic_os.sourcing_platform.HarmonicGql.query", return_value=HARMONIC_RETURN_VALUE)
     mocker.patch("mosaic_os.crm.AffinityApi.search_company_by_name_and_domains", return_value=[])
 
-    company_details = await get_all_company_details("test.com")
+    company_details = await get_all_company_details("test.com", mock_affinity_config)
     assert company_details["crm"] is None
     assert company_details["sourcing_platform"] is not None
     assert company_details["sourcing_platform"]["name"] == "Test"
@@ -133,7 +138,7 @@ async def test_get_all_company_details_sp_and_crm_match(mocker: MockerFixture, t
         return_value=AFFINITY_COMPANY_FIELD_VALUES_RETURN_VALUE,
     )
 
-    company_details = await get_all_company_details("test.com")
+    company_details = await get_all_company_details("test.com", mock_affinity_config)
 
     assert company_details["crm"] is not None
     assert company_details["sourcing_platform"] is not None
@@ -184,7 +189,7 @@ async def test_get_all_company_details_no_sp_match(mocker: MockerFixture, tests_
         return_value=AFFINITY_COMPANY_FIELD_VALUES_RETURN_VALUE,
     )
 
-    company_details = await get_all_company_details("test.com")
+    company_details = await get_all_company_details("test.com", mock_affinity_config)
 
     assert company_details["crm"] is not None
     assert (

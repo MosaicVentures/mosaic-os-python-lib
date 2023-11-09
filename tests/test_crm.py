@@ -30,7 +30,7 @@ async def test_affinity_api_get_field_values_raises_error_no_param():
     assert excinfo.type is ValueError
     assert (
         excinfo.value.args[0]
-        == "Only one of the following keys should be specified: `organization_id`, `list_entry_id`, `person_id`"
+        == "Only one of the following keys should be specified: `organization_id`, `list_entry_id`, `person_id` or `opportunity_id`"  # noqa: E501
     )
 
 
@@ -43,7 +43,7 @@ async def test_affinity_api_get_field_values_raises_error_wrong_param():
     assert excinfo.type is ValueError
     assert (
         excinfo.value.args[0]
-        == "Only one of the following keys should be specified: `organization_id`, `list_entry_id`, `person_id`"
+        == "Only one of the following keys should be specified: `organization_id`, `list_entry_id`, `person_id` or `opportunity_id`"  # noqa: E501
     )
 
 

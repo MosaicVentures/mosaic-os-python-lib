@@ -113,9 +113,11 @@ class AffinityApi:
             list[dict]: List of field values
         """
 
-        if len(param) != 1 or not any(k in param for k in ("organization_id", "list_entry_id", "person_id")):
+        if len(param) != 1 or not any(
+            k in param for k in ("organization_id", "list_entry_id", "person_id", "opportunity_id")
+        ):
             raise ValueError(
-                "Only one of the following keys should be specified: `organization_id`, `list_entry_id`, `person_id`"
+                "Only one of the following keys should be specified: `organization_id`, `list_entry_id`, `person_id` or `opportunity_id`"  # noqa: E501
             )
 
         response = await self.requests.get(url="/field-values", params=param)
@@ -210,6 +212,20 @@ class AffinityApi:
             list[dict]: List of list entries
         """
         response = await self.requests.get(f"/lists/{list_id}/list-entries")
+        response.raise_for_status()
+        return response.json()
+
+    # Opportunity related API calls
+    async def get_opportunity_details(self, opportunity_id: int) -> dict:
+        """Get opportunity details by ID
+
+        Args:
+            opportunity_id (int): ID of opportunity
+
+        Returns:
+            dict: Response with opportunity details
+        """
+        response = await self.requests.get(f"/opportunities/{opportunity_id}")
         response.raise_for_status()
         return response.json()
 

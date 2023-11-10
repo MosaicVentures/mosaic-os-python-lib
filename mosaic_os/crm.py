@@ -107,7 +107,8 @@ class AffinityApi:
 
         Args:
             param (dict): Query param to filter field values by Company ID, List Entry ID, or Person ID.
-                Only one of the following keys should be specified: `organization_id`, `list_entry_id`, `person_id`
+                Only one of the following keys should be specified: `organization_id`, `list_entry_id`, `person_id
+                or `opportunity_id`
 
         Returns:
             list[dict]: List of field values
@@ -159,6 +160,31 @@ class AffinityApi:
         """
         data = {"value": new_value}
         response = await self.requests.put(f"/field-values/{field_value_id}", json=data)
+        response.raise_for_status()
+        return response.json()
+
+    async def upsert_field_value(
+        self, field_id: int, entity_id: int, value: str | int, list_entry_id: int = None
+    ) -> dict:
+        """Upserts field value.
+
+        Note: This API call is a bit of a hack as it is not documented in the Affinity API docs.
+
+        Args:
+            field_id (int): Field ID to upsert
+            entity_id (int): Entity ID
+            value (str | int): Value of field to set. If field is a ranked dropdown this should be the
+                ID of the value to set
+            list_entry_id (int, optional): Set if the field belongs to a list. Defaults to None.
+
+        Returns:
+            dict: Response with upserted field value
+        """
+        data = {"field_id": field_id, "entity_id": entity_id, "value": value}
+        if list_entry_id:
+            data.update({"list_entry_id": list_entry_id})
+
+        response = await self.requests.put("/field-values", json=data)
         response.raise_for_status()
         return response.json()
 

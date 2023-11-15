@@ -21,8 +21,8 @@ class HarmonicGql:
         if _harmonic_api_key is None:
             raise ValueError("Harmonic API Key not found in environment variables or passed as argument")
 
-        transport = AIOHTTPTransport(url="https://api.harmonic.ai/graphql", headers={"apikey": _harmonic_api_key})
-        self.client = Client(transport=transport, execute_timeout=timeout)
+        self.transport = AIOHTTPTransport(url="https://api.harmonic.ai/graphql", headers={"apikey": _harmonic_api_key})
+        self.client = Client(transport=self.transport, execute_timeout=timeout)
         self.session = None
 
     async def connect(self):

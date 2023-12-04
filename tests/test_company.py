@@ -55,6 +55,26 @@ AFFINITY_COMPANY_DETAILS_RETURN_VALUE = {
     ],
 }
 
+AFFINITY_COMPANY_DETAILS_WITHOUT_LP_ENTRY_RETURN_VALUE = {
+    "id": 64779194,
+    "name": "Test",
+    "domain": "test.com",
+    "domains": ["test.com"],
+    "global": True,
+    "person_ids": [
+        89734,
+        117270,
+        138123,
+        274492,
+        304848,
+    ],
+    "opportunity_ids": [
+        4,
+        11,
+    ],
+    "list_entries": [],
+}
+
 AFFINITY_COMPANY_FIELD_VALUES_RETURN_VALUE = [
     {
         "id": 2634897436,
@@ -196,3 +216,28 @@ async def test_get_all_company_details_no_sp_match(mocker: MockerFixture, tests_
         company_details["sourcing_platform"]["enrichment_urn"]
         == "urn:harmonic:enrichment:300e63e6-7d23-4e98-9e3d-5a56b1e233e3"
     )
+
+
+@pytest.mark.asyncio
+async def test_company_found_in_crm_but_no_live_pipeline_entry_found(mocker: MockerFixture, tests_setup_and_teardown):
+    mocker.patch("mosaic_os.sourcing_platform.HarmonicGql.query", return_value=HARMONIC_RETURN_VALUE)
+    mocker.patch(
+        "mosaic_os.crm.AffinityApi.search_company_by_name_and_domains", return_value=AFFINITY_SEARCH_RETURN_VALUE
+    )
+    mocker.patch(
+        "mosaic_os.crm.AffinityApi.get_company_details",
+        return_value=AFFINITY_COMPANY_DETAILS_WITHOUT_LP_ENTRY_RETURN_VALUE,
+    )
+    mocker.patch(
+        "mosaic_os.crm.AffinityApi.get_field_values",
+        return_value=AFFINITY_COMPANY_FIELD_VALUES_RETURN_VALUE,
+    )
+
+    company_details = await get_all_company_details("test.com", mock_affinity_config)
+
+    assert company_details["crm"] is not None
+    assert company_details["crm"]["company_id"] == 64779194
+    assert company_details["crm"]["company_name"] == "Test"
+    assert company_details["crm"]["domain"] == "test.com"
+    assert isinstance(company_details["crm"]["ec_flag"], dict)
+    assert company_details["crm"]["last_live_pipeline_list_entry"] is None

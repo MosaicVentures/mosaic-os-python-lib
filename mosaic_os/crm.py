@@ -256,7 +256,7 @@ class AffinityApi:
         return response.json()
 
     # Helper methods
-    async def search_company_by_name_and_domains(self, name: str, domains: list[str]) -> list[dict]:
+    async def search_company_by_name_and_domains(self, domains: list[str], name: str = None) -> list[dict]:
         """Search company by name and domains
 
         Args:
@@ -267,8 +267,11 @@ class AffinityApi:
             list[dict]: List of companies found. Results are deduplicated
         """
         # search affinity based on company name and known domains
-        affinity_company_name_results = await self.search_company(name)
-        affinity_results = affinity_company_name_results["organizations"]
+        if name:
+            affinity_company_name_results = await self.search_company(name)
+            affinity_results = affinity_company_name_results["organizations"]
+        else:
+            affinity_results = []
         for domain in domains:
             results = await self.search_company(domain)
             for result in results["organizations"]:

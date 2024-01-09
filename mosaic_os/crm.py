@@ -88,7 +88,7 @@ class AffinityApi:
         response.raise_for_status()
         return response.json()
 
-    async def get_person_details(self, entity_id: int) -> dict:
+    async def get_person_details(self, entity_id: int, with_current_organizations: bool = False) -> dict:
         """Get person details by ID
 
         Args:
@@ -97,7 +97,10 @@ class AffinityApi:
         Returns:
             dict: Response with person details
         """
-        response = await self.requests.get(f"/persons/{entity_id}")  # noqa: E501
+        params = {}
+        if with_current_organizations:
+            params.update({"with_current_organizations": "true"})
+        response = await self.requests.get(f"/persons/{entity_id}", params=params)
         response.raise_for_status()
         return response.json()
 

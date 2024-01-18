@@ -38,10 +38,6 @@ async def get_all_company_details(domain: str, affinity_config: dict[str, Any]) 
                 website {
                     domain
                 }
-                watchlists {
-                    name
-                    id
-                }
             }
         }
     }"""

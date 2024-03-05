@@ -1,8 +1,14 @@
 import pytest
+from google.cloud.datastore import Client, Entity, Key  # noqa: F401
 from gql.transport.exceptions import TransportQueryError
 from pytest_mock import MockerFixture
 
-from mosaic_os.company import get_all_company_details
+from mosaic_os.company import (
+    create_company_master_id,
+    get_all_company_details,
+    lookup_company_master_id_by_domain,
+)
+from mosaic_os.models import Company
 
 HARMONIC_RETURN_VALUE = {
     "enrichCompanyByIdentifiers": {
@@ -241,3 +247,41 @@ async def test_company_found_in_crm_but_no_live_pipeline_entry_found(mocker: Moc
     assert company_details["crm"]["domain"] == "test.com"
     assert isinstance(company_details["crm"]["ec_flag"], dict)
     assert company_details["crm"]["last_live_pipeline_list_entry"] is None
+
+
+def test_lookup_company_master_id_by_domain_no_match(mocker: MockerFixture, tests_setup_and_teardown):
+    client = mocker.patch("tests.test_company.Client")
+
+    company = lookup_company_master_id_by_domain("test.com", client)
+    assert company is None
+
+
+def test_lookup_company_master_id_by_domain_match(mocker: MockerFixture, tests_setup_and_teardown):
+    client = mocker.patch("tests.test_company.Client")
+    client.key.return_value = Key("Company", 123, project="test-project")
+    company_entity = Entity(key=client.key("Company", 123))
+    company_entity.update(Company(id=123, domains=["test.com"], sp_id="12345", crm_id="12").model_dump(exclude={"id"}))
+    existing_company_record = [company_entity]
+    client.query.return_value.fetch.return_value = existing_company_record
+
+    company = lookup_company_master_id_by_domain("test.com", client)
+    assert company.id == 123
+    assert company.domains[0] == "test.com"
+    assert company.sp_id == "12345"
+    assert company.crm_id == "12"
+
+
+def test_create_company_master_id(mocker: MockerFixture, tests_setup_and_teardown):
+    client = mocker.patch("tests.test_company.Client")
+    mocked_key = Key("Company", 123, project="test-project")
+    client.allocate_ids.return_value = [mocked_key]
+    client.entity.return_value = Entity(key=mocked_key)
+    client.put.return_value = None
+
+    company = Company(id=None, domains=["test.com"], sp_id="12345", crm_id="12")
+    company = create_company_master_id(company, client)
+
+    assert company.id == 123
+    assert company.domains[0] == "test.com"
+    assert company.sp_id == "12345"
+    assert company.crm_id == "12"

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mosaic-os"
-version = "3.6.0"
+version = "3.7.0"
 description = "Shared python library for Mosaic OS"
 authors = ["Gohar Iqbal <gohar@mosaicventures.com>"]
 readme = "README.md"
@@ -14,6 +14,7 @@ tldextract = "^3.6.0"
 google-api-python-client = "^2.102.0"
 google-cloud-datastore = "^2.18.0"
 google-cloud-storage = "^2.13.0"
+pydantic = "^2.6.3"
 
 
 [tool.poetry.group.dev.dependencies]

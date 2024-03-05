@@ -1,9 +1,11 @@
 from typing import Any
 
+from google.cloud.datastore import Client
 from gql.transport.exceptions import TransportQueryError
 from tldextract import extract
 
 from mosaic_os.crm import AffinityApi
+from mosaic_os.models import Company
 from mosaic_os.sourcing_platform import HarmonicGql
 
 
@@ -144,3 +146,42 @@ async def get_all_company_details(domain: str, affinity_config: dict[str, Any]) 
     }
 
     return {"crm": affinity_return, "sourcing_platform": harmonic_company}
+
+
+def lookup_company_master_id_by_domain(domain: str, db_client: Client) -> Company | None:
+    """Lookup company master id by domain
+
+    Args:
+        domain (str): Domain name of company
+        db_client (Client): Datastore client
+
+    Returns:
+        Company: Company details
+    """
+    clean_domain = extract(domain).registered_domain
+    query = db_client.query(kind="Company")
+    query.add_filter("domain", "=", clean_domain)
+    results = list(query.fetch())
+    if not len(results):
+        return None
+
+    return Company(id=results[0].key.id, **results[0])
+
+
+def create_company_master_id(company: Company, db_client: Client) -> Company:
+    """Create company master id
+
+    Args:
+        company (Company): Company details
+        db_client (Client): Datastore client
+
+    Returns:
+        Company: Company details
+    """
+    partial_key = db_client.key("Company")
+    allocated_keys = db_client.allocate_ids(partial_key, 1)
+    company_entity = db_client.entity(key=allocated_keys[0])
+    company.id = company_entity.key.id
+    company_entity.update(company.model_dump(exclude={"id"}))
+    db_client.put(company_entity)
+    return company

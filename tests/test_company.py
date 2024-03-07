@@ -285,3 +285,5 @@ def test_create_company_master_id(mocker: MockerFixture, tests_setup_and_teardow
     assert company.domains[0] == "test.com"
     assert company.sp_id == "12345"
     assert company.crm_id == "12"
+    assert company.created_at is not None
+    assert company.updated_at is None

@@ -1,6 +1,7 @@
 from typing import Any
 
 from google.cloud.datastore import Client
+from google.cloud.datastore.query import PropertyFilter
 from gql.transport.exceptions import TransportQueryError
 from tldextract import extract
 
@@ -160,7 +161,7 @@ def lookup_company_master_id_by_domain(domain: str, db_client: Client) -> Compan
     """
     clean_domain = extract(domain).registered_domain
     query = db_client.query(kind="Company")
-    query.add_filter("domains", "=", clean_domain)
+    query.add_filter(filter=PropertyFilter("domains", "=", clean_domain))
     results = list(query.fetch())
     if not len(results):
         return None

@@ -41,6 +41,14 @@ async def get_all_company_details(domain: str, affinity_config: dict[str, Any]) 
                 website {
                     domain
                 }
+                socials {
+                    pitchbook {
+                        url
+                    }
+                    crunchbase {
+                        url
+                    }
+                }
             }
         }
     }"""
@@ -59,6 +67,7 @@ async def get_all_company_details(domain: str, affinity_config: dict[str, Any]) 
                     "id": None,
                     "website": None,
                     "watchlists": [],
+                    "socials": {},
                     "enrichment_urn": error.get("extensions", {})
                     .get("response", {})
                     .get("body", {})

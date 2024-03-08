@@ -19,6 +19,7 @@ class Company(BaseModel):
     domains: list[str]
     sp_id: str | None = None
     crm_id: str | None = None
+    pb_id: str | None = None
     current: bool = True
     metadata: CompanyMetadata | None = None
     created_at: datetime = Field(default_factory=datetime_now)

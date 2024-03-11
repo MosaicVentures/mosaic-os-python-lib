@@ -149,6 +149,7 @@ async def get_all_company_details(domain: str, affinity_config: dict[str, Any]) 
         "company_id": affinity_entity_id,
         "company_name": affinity_company_details["name"],
         "domain": affinity_company_details["domain"],
+        "domains": affinity_company_details["domains"],
         "ec_flag": affinity_client.field_value_by_field_id(
             field_values=company_field_values, field_id=affinity_config["ec_flag_field_id"]
         ),

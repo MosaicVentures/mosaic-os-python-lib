@@ -11,6 +11,8 @@ class CompanyMetadata(BaseModel):
     merged_to: list[int] = []
     merged_from: list[int] = []
     merged_by: str
+    merged_source: str
+    merged_event_type: str
 
 
 class Company(BaseModel):

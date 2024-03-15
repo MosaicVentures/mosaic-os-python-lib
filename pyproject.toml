@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mosaic-os"
-version = "4.0.0"
+version = "4.0.1"
 description = "Shared python library for Mosaic OS"
 authors = ["Gohar Iqbal <gohar@mosaicventures.com>"]
 readme = "README.md"

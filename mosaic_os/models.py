@@ -8,6 +8,7 @@ from mosaic_os.utils import datetime_now
 class CompanyMetadata(BaseModel):
     merged: bool = False
     merged_at: datetime | None = None
+    merged_to: list[int] = []
     merged_from: list[int] = []
     merged_by: str
 

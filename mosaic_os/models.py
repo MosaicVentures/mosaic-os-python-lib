@@ -20,6 +20,9 @@ class Company(BaseModel):
     sp_id: str | None = None
     crm_id: str | None = None
     pb_id: str | None = None
+    crunchbase_id: str | None = None
+    crunchbase_url: str | None = None
+    pitchbook_url: str | None = None
     linkedin_url: str | None = None
     twitter_url: str | None = None
     stackoverflow_url: str | None = None

@@ -225,6 +225,43 @@ async def test_get_all_company_details_no_sp_match(mocker: MockerFixture, tests_
 
 
 @pytest.mark.asyncio
+async def test_get_all_company_details_no_sp_and_no_enrichment_urn(mocker: MockerFixture, tests_setup_and_teardown):
+    harmonic_company_not_found_error = [
+        {
+            "message": "404: Not Found",
+            "locations": [{"line": 2, "column": 3}],
+            "path": ["enrichCompanyByIdentifiers"],
+            "extensions": {
+                "code": "INTERNAL_SERVER_ERROR",
+                "response": {
+                    "url": "http://midtier/companies?enrich_missing_company=true&hide_non_surfaceable_company=false&website_url=meetcopilot.app",  # noqa: E501
+                    "status": 404,
+                    "statusText": "Not Found",
+                    "body": {"detail": "Company not found!"},
+                },
+            },
+        }
+    ]
+    mocker.patch(
+        "mosaic_os.sourcing_platform.HarmonicGql.query",
+        side_effect=TransportQueryError(msg="404: Not Found", errors=harmonic_company_not_found_error),
+    )
+    mocker.patch(
+        "mosaic_os.crm.AffinityApi.search_company_by_name_and_domains", return_value=AFFINITY_SEARCH_RETURN_VALUE
+    )
+    mocker.patch("mosaic_os.crm.AffinityApi.get_company_details", return_value=AFFINITY_COMPANY_DETAILS_RETURN_VALUE)
+    mocker.patch(
+        "mosaic_os.crm.AffinityApi.get_field_values",
+        return_value=AFFINITY_COMPANY_FIELD_VALUES_RETURN_VALUE,
+    )
+
+    company_details = await get_all_company_details("test.com", mock_affinity_config)
+
+    assert company_details["crm"] is not None
+    assert company_details["sourcing_platform"]["enrichment_urn"] is None
+
+
+@pytest.mark.asyncio
 async def test_company_found_in_crm_but_no_live_pipeline_entry_found(mocker: MockerFixture, tests_setup_and_teardown):
     mocker.patch("mosaic_os.sourcing_platform.HarmonicGql.query", return_value=HARMONIC_RETURN_VALUE)
     mocker.patch(

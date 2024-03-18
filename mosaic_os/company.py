@@ -74,17 +74,18 @@ async def get_all_company_details(domain: str, affinity_config: dict[str, Any]) 
     except TransportQueryError as e:
         for error in e.errors:
             if error.get("extensions", {}).get("response", {}).get("status", 400) == 404:
+                response_detail = error.get("extensions", {}).get("response", {}).get("body", {}).get("detail", {})
+                if isinstance(response_detail, dict):
+                    enrichment_urn = response_detail.get("enrichment_urn", None)
+                else:
+                    enrichment_urn = None
                 harmonic_company = {
                     "name": None,
                     "id": None,
                     "website": None,
                     "watchlists": [],
                     "socials": {},
-                    "enrichment_urn": error.get("extensions", {})
-                    .get("response", {})
-                    .get("body", {})
-                    .get("detail", {})
-                    .get("enrichment_urn", None),
+                    "enrichment_urn": enrichment_urn,
                 }
                 break
 

@@ -73,21 +73,20 @@ async def get_all_company_details(domain: str, affinity_config: dict[str, Any]) 
         harmonic_company.update({"enrichment_urn": None})
     except TransportQueryError as e:
         for error in e.errors:
+            enrichment_urn = None
             if error.get("extensions", {}).get("response", {}).get("status", 400) == 404:
                 response_detail = error.get("extensions", {}).get("response", {}).get("body", {}).get("detail", {})
                 if isinstance(response_detail, dict):
                     enrichment_urn = response_detail.get("enrichment_urn", None)
-                else:
-                    enrichment_urn = None
-                harmonic_company = {
-                    "name": None,
-                    "id": None,
-                    "website": None,
-                    "watchlists": [],
-                    "socials": {},
-                    "enrichment_urn": enrichment_urn,
-                }
-                break
+            harmonic_company = {
+                "name": None,
+                "id": None,
+                "website": None,
+                "watchlists": [],
+                "socials": {},
+                "enrichment_urn": enrichment_urn,
+            }
+            break
 
     # combine clean domain and harmonic domain to increase likelihood of matching in Affinity
     known_domains = [domain_clean]

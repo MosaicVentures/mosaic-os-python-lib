@@ -1,4 +1,5 @@
 import json
+from enum import Enum
 from os import environ
 
 from httpx import AsyncClient
@@ -321,3 +322,11 @@ class AffinityApi:
         """
         list_to_dedupe_json_set = {json.dumps(dictionary, sort_keys=True) for dictionary in list_to_dedupe}
         return [json.loads(t) for t in list_to_dedupe_json_set]
+
+
+class AffinityReminderResetType(Enum):
+    """Enum for Affinity Reminder Reset Type"""
+
+    INTERACTION = 0
+    EMAIL = 1
+    MEETING = 2

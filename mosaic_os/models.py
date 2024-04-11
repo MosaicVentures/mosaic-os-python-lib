@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_serializer
 
 from mosaic_os.crm import AffinityReminderResetType
 from mosaic_os.utils import datetime_now
@@ -92,3 +92,7 @@ class ActionItem(BaseModel):
     completed_at: datetime | None = None
     created_at: datetime = Field(default_factory=datetime_now)
     updated_at: datetime | None = None
+
+    @field_serializer("status")
+    def serialize_status(self, action_item_status: ActionItemStatus):
+        return action_item_status.value

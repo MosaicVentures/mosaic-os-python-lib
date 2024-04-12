@@ -57,6 +57,15 @@ class ActionItemMetadata(BaseModel):
         extra = "allow"
 
 
+class ActionItemSfnMetadata(BaseModel):
+    source: str
+    event_type: str
+    event_id: str
+
+    class Config:
+        extra = "allow"
+
+
 class User(BaseModel):
     email: str
     name: str
@@ -86,6 +95,12 @@ class ActionItem(BaseModel):
     tagged_crm_opportunity_id: int | None = None
     company: CompanyBase | None = None
     last_delivery_id: str | None = None
+    last_delivery_at: datetime | None = None
+    delivery_dates: list[datetime] = []
+    sfn_completed: bool = False
+    sfn_completed_at: datetime | None = None
+    sfn_metadata: ActionItemSfnMetadata | None = None
+    ais_type: str | None = None
     delivery_ids: list[str] = []
     score: Score | None = None
     metadata: ActionItemMetadata | None = None

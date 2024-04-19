@@ -5,7 +5,7 @@ from mosaic_os.crm import AffinityReminderResetType
 from mosaic_os.models import ActionItemStatus, CompanyBase
 
 
-def test_affinity_reminder_to_ais_success():
+def test_affinity_reminder_for_company():
     affinity_reminder = {
         "id": 15562,
         "type": 1,
@@ -77,6 +77,134 @@ def test_affinity_reminder_to_ais_success():
     assert action_item.company.domains == ["organization.com"]
     assert action_item.company.sp_id == "1234"
     assert action_item.company.crm_id == "5678"
+    assert action_item.metadata.source_id == "15562"
+    assert action_item.metadata.source == "urn:mosaic-os:service:webhook:affinity"
+    assert action_item.metadata.event_type == "REMIMDER.CREATED"
+    assert action_item.metadata.crm_reset_type == AffinityReminderResetType.INTERACTION
+
+
+def test_affinity_reminder_for_person():
+    affinity_reminder = {
+        "id": 15562,
+        "type": 1,
+        "created_at": "2021-11-22T09:31:52.415-08:00",
+        "completed_at": None,
+        "content": "Recurring reminder",
+        "due_date": "2021-12-22T09:31:52.415-08:00",
+        "reset_type": 0,
+        "reminder_days": 30,
+        "status": 2,
+        "creator": {
+            "id": 443,
+            "type": 1,
+            "first_name": "John",
+            "last_name": "Doe",
+            "primary_email": "test_user@mosaicventures.com",
+            "emails": ["john@affinity.co"],
+        },
+        "owner": {
+            "id": 443,
+            "type": 1,
+            "first_name": "John",
+            "last_name": "Doe",
+            "primary_email": "test_user@mosaicventures.com",
+            "emails": ["test_user@mosaicventures.com"],
+        },
+        "completer": None,
+        "person": {
+            "id": 1234,
+            "first_name": "John",
+            "last_name": "Appleseed",
+            "primary_email": "john@somestartup.com",
+            "emails": ["john@somestartup.com"],
+        },
+        "organization": None,
+        "opportunity": None,
+    }
+
+    action_item = affinity_reminder_to_ais(
+        affinity_reminder=affinity_reminder,
+        source_system="urn:mosaic-os:service:webhook:affinity",
+        event_type="REMIMDER.CREATED",
+    )
+
+    assert action_item.id is None
+    assert action_item.status == ActionItemStatus.OVERDUE
+    assert action_item.content == "Recurring reminder"
+    assert isinstance(action_item.due_date, datetime)
+    assert action_item.creator.email == "test_user@mosaicventures.com"
+    assert action_item.creator.name == "John Doe"
+    assert action_item.creator.crm_id == 443
+    assert action_item.completer is None
+    assert action_item.owner.email == "test_user@mosaicventures.com"
+    assert action_item.owner.name == "John Doe"
+    assert action_item.owner.crm_id == 443
+    assert len(action_item.tagged_persons) == 1
+    assert action_item.tagged_persons[0].crm_id == 1234
+    assert action_item.tagged_persons[0].name == "John Appleseed"
+    assert action_item.tagged_persons[0].email == "john@somestartup.com"
+    assert action_item.company is None
+    assert action_item.metadata.source_id == "15562"
+    assert action_item.metadata.source == "urn:mosaic-os:service:webhook:affinity"
+    assert action_item.metadata.event_type == "REMIMDER.CREATED"
+    assert action_item.metadata.crm_reset_type == AffinityReminderResetType.INTERACTION
+
+
+def test_affinity_reminder_for_opportunity():
+    affinity_reminder = {
+        "id": 15562,
+        "type": 1,
+        "created_at": "2021-11-22T09:31:52.415-08:00",
+        "completed_at": None,
+        "content": "Recurring reminder",
+        "due_date": "2021-12-22T09:31:52.415-08:00",
+        "reset_type": 0,
+        "reminder_days": 30,
+        "status": 2,
+        "creator": {
+            "id": 443,
+            "type": 1,
+            "first_name": "John",
+            "last_name": "Doe",
+            "primary_email": "test_user@mosaicventures.com",
+            "emails": ["john@affinity.co"],
+        },
+        "owner": {
+            "id": 443,
+            "type": 1,
+            "first_name": "John",
+            "last_name": "Doe",
+            "primary_email": "test_user@mosaicventures.com",
+            "emails": ["test_user@mosaicventures.com"],
+        },
+        "completer": None,
+        "person": None,
+        "organization": None,
+        "opportunity": {
+            "id": 1234,
+        },
+    }
+
+    action_item = affinity_reminder_to_ais(
+        affinity_reminder=affinity_reminder,
+        source_system="urn:mosaic-os:service:webhook:affinity",
+        event_type="REMIMDER.CREATED",
+    )
+
+    assert action_item.id is None
+    assert action_item.status == ActionItemStatus.OVERDUE
+    assert action_item.content == "Recurring reminder"
+    assert isinstance(action_item.due_date, datetime)
+    assert action_item.creator.email == "test_user@mosaicventures.com"
+    assert action_item.creator.name == "John Doe"
+    assert action_item.creator.crm_id == 443
+    assert action_item.completer is None
+    assert action_item.owner.email == "test_user@mosaicventures.com"
+    assert action_item.owner.name == "John Doe"
+    assert action_item.owner.crm_id == 443
+    assert not len(action_item.tagged_persons)
+    assert action_item.tagged_crm_opportunity_id == 1234
+    assert action_item.company is None
     assert action_item.metadata.source_id == "15562"
     assert action_item.metadata.source == "urn:mosaic-os:service:webhook:affinity"
     assert action_item.metadata.event_type == "REMIMDER.CREATED"

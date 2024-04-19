@@ -71,6 +71,7 @@ def test_affinity_reminder_for_company():
     assert action_item.owner.name == "John Doe"
     assert action_item.owner.crm_id == 443
     assert not len(action_item.tagged_persons)
+    assert action_item.tagged_crm_opportunity_id is None
     assert action_item.company.id == 97403
     assert action_item.company.name == "organization"
     assert action_item.company.primary_domain == "organization.com"
@@ -139,6 +140,7 @@ def test_affinity_reminder_for_person():
     assert action_item.owner.email == "test_user@mosaicventures.com"
     assert action_item.owner.name == "John Doe"
     assert action_item.owner.crm_id == 443
+    assert action_item.tagged_crm_opportunity_id is None
     assert len(action_item.tagged_persons) == 1
     assert action_item.tagged_persons[0].crm_id == 1234
     assert action_item.tagged_persons[0].name == "John Appleseed"

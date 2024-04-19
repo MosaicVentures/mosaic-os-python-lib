@@ -52,6 +52,7 @@ def affinity_reminder_to_ais(
             if affinity_reminder["person"]
             else []
         ),
+        tagged_crm_opportunity_id=affinity_reminder["opportunity"]["id"] if affinity_reminder["opportunity"] else None,
         company=company,
         metadata=ActionItemMetadata(
             source_id=str(affinity_reminder["id"]),

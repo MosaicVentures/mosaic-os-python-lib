@@ -259,6 +259,21 @@ class AffinityApi:
         response.raise_for_status()
         return response.json()
 
+    # Reminder related API calls
+    async def update_reminder(self, reminder_id: int, params: dict) -> dict:
+        """Update reminder
+
+        Args:
+            reminder_id (int): ID of reminder
+            params (dict): Payload parameters to update reminder
+
+        Returns:
+            dict: Response with updated reminder
+        """
+        response = await self.requests.put(f"/reminders/{reminder_id}", json=params)
+        response.raise_for_status()
+        return response.json()
+
     # Helper methods
     async def search_company_by_name_and_domains(self, domains: list[str], name: str = None) -> list[dict]:
         """Search company by name and domains

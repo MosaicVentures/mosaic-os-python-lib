@@ -71,6 +71,7 @@ class ActionItemSfnMetadata(BaseModel):
     source: str
     event_type: str
     event_id: str
+    user_approved: bool = False
 
     class Config:
         extra = "allow"

@@ -71,6 +71,7 @@ class ActionItemSfnMetadata(BaseModel):
     source: str
     event_type: str
     event_id: str
+    received_at: datetime = Field(default_factory=datetime_now)
     user_approved: bool = False
 
     class Config:
@@ -109,7 +110,7 @@ class ActionItem(BaseModel):
     deliveries: list[AisDelivery] = []
     sfn_completed: bool = False
     sfn_completed_at: datetime | None = None
-    sfn_metadata: ActionItemSfnMetadata | None = None
+    sfn_metadata: list[ActionItemSfnMetadata] | None = None
     ais_type: AisType = AisType.REMINDER
     score: Score | None = None
     metadata: ActionItemMetadata | None = None

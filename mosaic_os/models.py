@@ -97,7 +97,7 @@ class Score(BaseModel):
 
 class ActionItem(BaseModel):
     id: int | None
-    content: str
+    content: str | None = None
     status: ActionItemStatus = ActionItemStatus.ACTIVE
     due_date: datetime | None
     creator: User

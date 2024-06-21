@@ -15,7 +15,7 @@ def affinity_reminder_to_ais(
         id=None,
         status=affinity_reminder["status"],
         content=affinity_reminder["content"],
-        due_date=affinity_reminder["due_date"],
+        due_date=datetime.fromisoformat(affinity_reminder["due_date"]),
         creator=User(
             email=affinity_reminder["creator"]["primary_email"],
             name=combine_person_name(

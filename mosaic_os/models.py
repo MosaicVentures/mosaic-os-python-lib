@@ -55,6 +55,18 @@ class AisDelivery(BaseModel):
 
 class AisType(Enum):
     REMINDER = "reminder"
+    COMPANY_REVIEW = "company_review"
+    AUTOMATED_REMINDER = "automated_reminder"
+
+
+class SignalSource(Enum):
+    INTERNAL = "internal"
+    EXTERNAL = "external"
+
+
+class SignalType(Enum):
+    COMPANY = "company"
+    PEOPLE = "people"
 
 
 class ActionItemMetadata(BaseModel):
@@ -84,15 +96,26 @@ class User(BaseModel):
     crm_id: int | None = None
 
 
+class Search(BaseModel):
+    signal_source: SignalSource
+    signal_type: SignalType
+    search_id: str
+    search_name: str
+    applied_weight: float
+    weights: list[dict]
+
+    @field_serializer("signal_source")
+    def serialize_signal_source(self, signal_source: SignalSource):
+        return signal_source.value
+
+    @field_serializer("signal_type")
+    def serialize_signal_type(self, signal_type: SignalType):
+        return signal_type.value
+
+
 class Score(BaseModel):
-    total_score: float
-    weighting_vector: list[float]
-    company_score: float
-    people_score: float
-    internal_score: float
-    company_searches: list[str]
-    people_searches: list[str]
-    internal_searches: list[str]
+    created_at: datetime
+    searches: list[Search]
 
 
 class ActionItem(BaseModel):
@@ -112,7 +135,7 @@ class ActionItem(BaseModel):
     sfn_completed_at: datetime | None = None
     sfn_metadata: list[ActionItemSfnMetadata] | None = None
     ais_type: AisType = AisType.REMINDER
-    score: Score | None = None
+    score: list[Score] | None = None
     metadata: ActionItemMetadata | None = None
     completed_at: datetime | None = None
     created_at: datetime = Field(default_factory=datetime_now)

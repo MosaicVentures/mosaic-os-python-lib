@@ -274,6 +274,19 @@ class AffinityApi:
         response.raise_for_status()
         return response.json()
 
+    async def create_reminder(self, params: dict) -> dict:
+        """Create reminder
+
+        Args:
+            params (dict): Payload parameters to create reminder
+
+        Returns:
+            dict: Response with created reminder
+        """
+        response = await self.requests.post("/reminders", json=params)
+        response.raise_for_status()
+        return response.json()
+
     # Helper methods
     async def search_company_by_name_and_domains(self, domains: list[str], name: str = None) -> list[dict]:
         """Search company by name and domains
@@ -345,3 +358,11 @@ class AffinityReminderResetType(Enum):
     INTERACTION = 0
     EMAIL = 1
     MEETING = 2
+
+
+class AffinityEntityType(Enum):
+    """Enum for Affinity Entity Type"""
+
+    PERSON = 0
+    ORGANIZATION = 1
+    OPPORTUNITY = 8

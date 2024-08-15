@@ -102,7 +102,7 @@ class Search(BaseModel):
     search_id: str
     search_name: str
     applied_weight: float
-    weights: list[dict]
+    weights: dict[str, float]
 
     @field_serializer("signal_source")
     def serialize_signal_source(self, signal_source: SignalSource):
@@ -135,7 +135,7 @@ class ActionItem(BaseModel):
     sfn_completed_at: datetime | None = None
     sfn_metadata: list[ActionItemSfnMetadata] | None = None
     ais_type: AisType = AisType.REMINDER
-    score: list[Score] | None = None
+    score: Score | None = None
     metadata: ActionItemMetadata | None = None
     completed_at: datetime | None = None
     created_at: datetime = Field(default_factory=datetime_now)

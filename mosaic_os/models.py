@@ -101,6 +101,10 @@ class Search(BaseModel):
     signal_type: SignalType
     search_id: str
     search_name: str
+    in_mos: bool
+    last_priority: str | None
+    mofu: str | None
+    website_inbound: bool
     applied_weight: float
     weights: dict[str, float]
 

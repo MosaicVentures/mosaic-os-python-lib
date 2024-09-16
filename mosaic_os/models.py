@@ -82,7 +82,11 @@ class ActionItemMetadata(BaseModel):
     def serialize_crm_reset_type(
         self, crm_reset_type: AffinityReminderResetType
     ):
-        return crm_reset_type.value
+        return (
+            crm_reset_type.value
+            if isinstance(crm_reset_type, AffinityReminderResetType)
+            else None
+        )
 
 
 class ActionItemSfnMetadata(BaseModel):

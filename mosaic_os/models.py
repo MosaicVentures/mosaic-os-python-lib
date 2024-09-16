@@ -78,6 +78,12 @@ class ActionItemMetadata(BaseModel):
     class Config:
         extra = "allow"
 
+    @field_serializer("crm_reset_type")
+    def serialize_crm_reset_type(
+        self, crm_reset_type: AffinityReminderResetType
+    ):
+        return crm_reset_type.value
+
 
 class ActionItemSfnMetadata(BaseModel):
     source: str

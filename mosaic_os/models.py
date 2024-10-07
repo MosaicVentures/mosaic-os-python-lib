@@ -15,6 +15,7 @@ class CompanyMetadata(BaseModel):
     merged_by: str | None = None
     creator_source: str
     creator_event_type: str
+    enrichment_urn: str | None = None
 
 
 class CompanyBase(BaseModel):

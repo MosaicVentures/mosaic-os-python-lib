@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mosaic-os"
-version = "6.4.0"
+version = "6.5.0"
 description = "Shared python library for Mosaic OS"
 authors = ["Gohar Iqbal <gohar@mosaicventures.com>"]
 readme = "README.md"
@@ -8,7 +8,7 @@ packages = [{include = "mosaic_os"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-httpx = "^0.25.0"
+httpx = "^0.27.2"
 gql = {extras = ["aiohttp"], version = "^3.4.1"}
 tldextract = "^5.1.2"
 google-api-python-client = "^2.102.0"

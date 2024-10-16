@@ -7,6 +7,13 @@ from mosaic_os.crm import AffinityReminderResetType
 from mosaic_os.utils import datetime_now
 
 
+class DomainStatus(Enum):
+    ACTIVE = "active"
+    INACTIVE = "inactive"
+    REDIRECTED = "redirected"
+    UNKNOWN = "unknown"
+
+
 class CompanyMetadata(BaseModel):
     merged: bool = False
     merged_at: datetime | None = None
@@ -16,6 +23,16 @@ class CompanyMetadata(BaseModel):
     creator_source: str
     creator_event_type: str
     enrichment_urn: str | None = None
+    domain_status: DomainStatus | None = None
+    domain_status_updated_at: datetime | None = None
+
+    @field_serializer("domain_status")
+    def serialize_domain_status(self, domain_status: DomainStatus):
+        return (
+            domain_status.value
+            if isinstance(domain_status, DomainStatus)
+            else None
+        )
 
 
 class CompanyBase(BaseModel):

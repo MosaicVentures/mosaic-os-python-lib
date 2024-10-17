@@ -10,7 +10,9 @@ from mosaic_os.models import Company
 from mosaic_os.sourcing_platform import HarmonicGql
 
 
-async def get_all_company_details(domain: str, affinity_config: dict[str, Any]) -> dict:
+async def get_all_company_details(
+    domain: str, affinity_config: dict[str, Any]
+) -> dict:
     """Get company details from CRM and Sourcing Platform
 
     Args:
@@ -69,13 +71,25 @@ async def get_all_company_details(domain: str, affinity_config: dict[str, Any]) 
         harmonic_company_details = await harmonic_client.query(
             query=query, variables={"identifiers": {"websiteUrl": domain_clean}}
         )
-        harmonic_company = harmonic_company_details["enrichCompanyByIdentifiers"]["company"]
+        harmonic_company = harmonic_company_details[
+            "enrichCompanyByIdentifiers"
+        ]["company"]
         harmonic_company.update({"enrichment_urn": None})
     except TransportQueryError as e:
         for error in e.errors:
             enrichment_urn = None
-            if error.get("extensions", {}).get("response", {}).get("status", 400) == 404:
-                response_detail = error.get("extensions", {}).get("response", {}).get("body", {}).get("detail", {})
+            if (
+                error.get("extensions", {})
+                .get("response", {})
+                .get("status", 400)
+                == 404
+            ):
+                response_detail = (
+                    error.get("extensions", {})
+                    .get("response", {})
+                    .get("body", {})
+                    .get("detail", {})
+                )
                 if isinstance(response_detail, dict):
                     enrichment_urn = response_detail.get("enrichment_urn", None)
             harmonic_company = {
@@ -112,19 +126,26 @@ async def get_all_company_details(domain: str, affinity_config: dict[str, Any]) 
         return {"crm": None, "sourcing_platform": harmonic_company}
 
     # get company id of match and retrieve company information by id from affinity
-    affinity_company_details = await affinity_client.get_company_details(affinity_entity_id)
-    all_company_field_values = await affinity_client.get_field_values(param={"organization_id": affinity_entity_id})
+    affinity_company_details = await affinity_client.get_company_details(
+        affinity_entity_id
+    )
+    all_company_field_values = await affinity_client.get_field_values(
+        param={"organization_id": affinity_entity_id}
+    )
 
     # loop through list entries, get live pipeline entries only, and pick most recent one
     lp_entries = affinity_client.filter_entries_by_list_id(
-        list_entries=affinity_company_details["list_entries"], list_id=affinity_config["lp_list_id"]
+        list_entries=affinity_company_details["list_entries"],
+        list_id=affinity_config["lp_list_id"],
     )
 
     if len(lp_entries):
         last_entry = max(lp_entries, key=lambda entry: entry["created_at"])
         last_lp_list_entry_field_values = list(
             filter(
-                lambda field_value: (field_value["list_entry_id"] == last_entry["id"])
+                lambda field_value: (
+                    field_value["list_entry_id"] == last_entry["id"]
+                )
                 and (field_value["field_id"] in live_pipeline_fields),
                 all_company_field_values,
             )
@@ -132,13 +153,16 @@ async def get_all_company_details(domain: str, affinity_config: dict[str, Any]) 
         last_live_pipeline_list_entry = {
             "entry_id": last_entry["id"],
             "status": affinity_client.field_value_by_field_id(
-                field_values=last_lp_list_entry_field_values, field_id=affinity_config["lp_status_field_id"]
+                field_values=last_lp_list_entry_field_values,
+                field_id=affinity_config["lp_status_field_id"],
             ),
             "priority": affinity_client.field_value_by_field_id(
-                field_values=last_lp_list_entry_field_values, field_id=affinity_config["lp_priority_field_id"]
+                field_values=last_lp_list_entry_field_values,
+                field_id=affinity_config["lp_priority_field_id"],
             ),
             "owner": affinity_client.field_value_by_field_id(
-                field_values=last_lp_list_entry_field_values, field_id=affinity_config["lp_owner_field_id"]
+                field_values=last_lp_list_entry_field_values,
+                field_id=affinity_config["lp_owner_field_id"],
             ),
         }
     else:
@@ -149,7 +173,9 @@ async def get_all_company_details(domain: str, affinity_config: dict[str, Any]) 
     company_field_values = list(
         filter(
             lambda field_value: (field_value["list_entry_id"] is None)
-            and (field_value["field_id"] == affinity_config["ec_flag_field_id"]),
+            and (
+                field_value["field_id"] == affinity_config["ec_flag_field_id"]
+            ),
             all_company_field_values,
         )
     )
@@ -163,7 +189,8 @@ async def get_all_company_details(domain: str, affinity_config: dict[str, Any]) 
         "domain": affinity_company_details["domain"],
         "domains": affinity_company_details["domains"],
         "ec_flag": affinity_client.field_value_by_field_id(
-            field_values=company_field_values, field_id=affinity_config["ec_flag_field_id"]
+            field_values=company_field_values,
+            field_id=affinity_config["ec_flag_field_id"],
         ),
         "last_live_pipeline_list_entry": last_live_pipeline_list_entry,
     }
@@ -171,7 +198,9 @@ async def get_all_company_details(domain: str, affinity_config: dict[str, Any]) 
     return {"crm": affinity_return, "sourcing_platform": harmonic_company}
 
 
-def lookup_company_master_id_by_domain(domain: str, db_client: Client) -> Company | None:
+def lookup_company_master_id_by_domain(
+    domain: str, db_client: Client
+) -> Company | None:
     """Lookup company master id by domain
 
     Args:
@@ -184,7 +213,12 @@ def lookup_company_master_id_by_domain(domain: str, db_client: Client) -> Compan
     clean_domain = extract(domain).registered_domain
     query = db_client.query(kind="Company")
     query.add_filter(
-        filter=And([PropertyFilter("primary_domain", "=", clean_domain), PropertyFilter("current", "=", True)])
+        filter=And(
+            [
+                PropertyFilter("domains", "=", clean_domain),
+                PropertyFilter("current", "=", True),
+            ]
+        )
     )
     results = list(query.fetch())
     if not len(results):

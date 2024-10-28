@@ -1,5 +1,5 @@
 import pytest
-from google.cloud.datastore import Entity, Key  # noqa: F401
+from google.cloud.datastore import Client, Entity, Query  # noqa: F401
 from gql.transport.exceptions import TransportQueryError
 from pytest_mock import MockerFixture
 
@@ -405,17 +405,17 @@ async def test_company_found_in_crm_but_no_live_pipeline_entry_found(
 def test_lookup_company_master_id_by_domain_no_match(
     mocker: MockerFixture, tests_setup_and_teardown
 ):
-    client = mocker.patch("tests.test_company.Client")
+    mocked_client = Client(project="test-project")
+    mocker.patch.object(Query, "fetch", return_value=iter([]))
 
-    company = lookup_company_master_id_by_domain("test.com", client)
+    company = lookup_company_master_id_by_domain("test.com", mocked_client)
     assert company is None
 
 
 def test_lookup_company_master_id_by_domain_match(
     mocker: MockerFixture, tests_setup_and_teardown
 ):
-    client = mocker.patch("tests.test_company.Client")
-    client.key.return_value = Key("Company", 123, project="test-project")
+    client = Client(project="test-project")
     company_entity = Entity(key=client.key("Company", 123))
     company_entity.update(
         Company(
@@ -428,7 +428,9 @@ def test_lookup_company_master_id_by_domain_match(
         ).model_dump(exclude={"id"})
     )
     existing_company_record = [company_entity]
-    client.query.return_value.fetch.return_value = existing_company_record
+    mocker.patch.object(
+        Query, "fetch", return_value=iter(existing_company_record)
+    )
 
     company = lookup_company_master_id_by_domain("test.com", client)
     assert company.id == 123
@@ -440,11 +442,10 @@ def test_lookup_company_master_id_by_domain_match(
 def test_create_company_master_id(
     mocker: MockerFixture, tests_setup_and_teardown
 ):
-    client = mocker.patch("tests.test_company.Client")
-    mocked_key = Key("Company", 123, project="test-project")
-    client.allocate_ids.return_value = [mocked_key]
-    client.entity.return_value = Entity(key=mocked_key)
-    client.put.return_value = None
+    client = Client(project="test-project")
+    mocked_key = client.key("Company", 123)
+    mocker.patch.object(Client, "allocate_ids", return_value=[mocked_key])
+    mocker.patch.object(Client, "put", return_value=None)
 
     company = Company(
         id=None,

@@ -6,7 +6,8 @@ from uuid import uuid4
 
 from google.cloud.datastore import Client, Entity
 from google.oauth2 import service_account
-from googleapiclient.discovery import build
+from googleapiclient.discovery import build, google_auth_httplib2
+from httplib2 import Http
 
 from mosaic_os.constants import CALENDAR_SCOPES
 
@@ -31,7 +32,11 @@ def get_calendar_service(user_email: str):
         json.loads(environ["CALENDAR_SERVICE_ACCOUNT"]), scopes=CALENDAR_SCOPES
     )
     updated_credentials = source_credentials.with_subject(user_email)
-    return build("calendar", "v3", credentials=updated_credentials)
+    http = Http(timeout=int(environ.get("HTTP_TIMEOUT", 60)))
+    authed_http = google_auth_httplib2.AuthorizedHttp(
+        credentials=updated_credentials, http=http
+    )
+    return build("calendar", "v3", http=authed_http)
 
 
 def subscribe_channel(calendar_id: str):
@@ -55,7 +60,11 @@ def subscribe_channel(calendar_id: str):
     }
 
     # Make the watch request
-    data = calendar_service.events().watch(calendarId=calendar_id, body=body).execute()
+    data = (
+        calendar_service.events()
+        .watch(calendarId=calendar_id, body=body)
+        .execute()
+    )
     set_webhook_calendar(webhook_id, calendar_id, data)
 
 
